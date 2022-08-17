@@ -20,4 +20,14 @@ for arquivo in negociacao_files:
 
 # TRANSFORM 
 
+df = df.iloc[:, [0, 1, 5, 6, 7]]
+
+c_names = {'Data do Negócio':'data', 'Tipo de Movimentação':'tipo', 'Código de Negociação':'codigo', 'Quantidade':'quantidade', 'Preço':'valor'}
+
+df.rename(columns=c_names, inplace=True)
+
+df['codigo'] = df['codigo'].str.replace(pat='F$', repl='')
+
+df['tipo'] = df['tipo'].str.casefold()
+
 # LOAD
