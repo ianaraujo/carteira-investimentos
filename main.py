@@ -1,7 +1,7 @@
-import pandas as pd
 import os
-
 import warnings
+import pandas as pd
+
 warnings.simplefilter('ignore')
 
 # EXTRACT
@@ -14,20 +14,28 @@ df = pd.DataFrame()
 
 for arquivo in negociacao_files:
 
-   temp = pd.read_excel(f"./data/{arquivo}")
+   data = pd.read_excel(f"./data/{arquivo}")
 
-   df = pd.concat([df, temp]) 
+   df = pd.concat([df, data]) 
 
 # TRANSFORM 
 
-df = df.iloc[:, [0, 1, 5, 6, 7]]
+df = df.drop(['Mercado', 'Prazo/Vencimento', 'Instituição', 'Valor'], axis=1)
 
-c_names = {'Data do Negócio':'data', 'Tipo de Movimentação':'tipo', 'Código de Negociação':'codigo', 'Quantidade':'quantidade', 'Preço':'valor'}
+c_names = {'Data do Negócio':'data', 'Tipo de Movimentação':'tipo', 'Código de Negociação':'codigo', 'Quantidade':'quantidade', 'Preço':'preço'}
 
 df.rename(columns=c_names, inplace=True)
 
 df['codigo'] = df['codigo'].str.replace(pat='F$', repl='')
 
-df['tipo'] = df['tipo'].str.casefold()
+# Change TIET11 for AESB3
+
+df['tipo'] = df['tipo'].str.lower()
+
+df['valor_operacao'] = df['quantidade'] * df['preço']
+
+
 
 # LOAD
+
+print(df)
