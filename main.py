@@ -1,5 +1,8 @@
 import os
+import re
 import warnings
+import unidecode
+import sqlite3
 import pandas as pd
 
 warnings.simplefilter('ignore')
@@ -18,24 +21,36 @@ for arquivo in negociacao_files:
 
    df = pd.concat([df, data]) 
 
+df_subscricoes = pd.read_csv('./data/extrato_subscricoes.csv')
+
 # TRANSFORM 
 
 df = df.drop(['Mercado', 'Prazo/Vencimento', 'Instituição', 'Valor'], axis=1)
 
-c_names = {'Data do Negócio':'data', 'Tipo de Movimentação':'tipo', 'Código de Negociação':'codigo', 'Quantidade':'quantidade', 'Preço':'preço'}
+def change_names(col_name):
+   new_name = re.sub('\\b(de|do)\\b', '_', col_name.lower())
+   new_name = unidecode.unidecode(new_name.replace(' ', ''))
 
-df.rename(columns=c_names, inplace=True)
+   return new_name
 
-df['codigo'] = df['codigo'].str.replace(pat='F$', repl='')
+df = df.rename(columns=change_names)
 
-# Change TIET11 for AESB3
+df = pd.concat([df, df_subscricoes], ignore_index=True)
 
-df['tipo'] = df['tipo'].str.lower()
+df['data_negocio'] = pd.to_datetime(df['data_negocio'], format='%d/%m/%Y')
 
-df['valor_operacao'] = df['quantidade'] * df['preço']
+df['codigo_negociacao'] = df['codigo_negociacao'].str.replace(pat='F$', repl='')
 
+df.loc[df['codigo_negociacao'] == 'TIET11', 'codigo_negociacao'] = 'AESB3'
 
+df['tipo_movimentacao'] = df['tipo_movimentacao'].str.lower()
+
+df.info()
 
 # LOAD
 
-print(df)
+conn = sqlite3.connect('./data/ct_investimentos.db')
+
+df.to_sql('tb_negociacoes', conn, index=False, if_exists='replace')
+
+conn.close()
