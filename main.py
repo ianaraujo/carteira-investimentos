@@ -39,6 +39,8 @@ df = pd.concat([df, df_subscricoes], ignore_index=True)
 
 df['data_negocio'] = pd.to_datetime(df['data_negocio'], format='%d/%m/%Y')
 
+df['data_negocio'] = df['data_negocio'].dt.date # keep only date 
+
 df['codigo_negociacao'] = df['codigo_negociacao'].str.replace(pat='F$', repl='')
 
 df.loc[df['codigo_negociacao'] == 'TIET11', 'codigo_negociacao'] = 'AESB3'
