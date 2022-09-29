@@ -21,7 +21,7 @@ for arquivo in negociacao_files:
 
    df = pd.concat([df, data]) 
 
-df_subscricoes = pd.read_csv('./data/extrato_subscricoes.csv')
+df_subscricoes = pd.read_csv('./data/extrato-subscricoes.csv')
 
 # TRANSFORM 
 

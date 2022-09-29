@@ -1,4 +1,4 @@
-CREATE VIEW vw_carteira_consolidada AS
+CREATE VIEW IF NOT EXISTS vw_carteira_consolidada AS
 
 SELECT codigo_negociacao, 
 
