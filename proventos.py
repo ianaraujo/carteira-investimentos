@@ -45,6 +45,8 @@ proventos = proventos.rename(columns=change_names)
 
 proventos['produto'] = proventos['produto'].str.extract('^(.*?)\s')
 
+proventos.loc[proventos['produto'] == 'TIET11', 'produto'] = 'AESB3'
+
 proventos.loc[proventos['tipo_evento'] == "Juros Sobre Capital Próprio", 'tipo_evento'] = 'JCP'
 
 proventos['pagamento'] = pd.to_datetime(proventos['pagamento'], format='%d/%m/%Y').dt.date
